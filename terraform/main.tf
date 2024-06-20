@@ -31,7 +31,7 @@ resource "confluent_environment" "environment" {
 # Stream Governance and Kafka clusters can be in different regions as well as different cloud providers,
 # but you should to place both in the same cloud and region to restrict the fault isolation boundary.
 data "confluent_schema_registry_region" "essentials" {
-  cloud   = "AWS"
+  cloud   = "${var.cloud}"
   region  = "${var.sr_region}"
   package = "ESSENTIALS"
 }
@@ -54,7 +54,7 @@ resource "confluent_kafka_cluster" "cluster" {
     id = confluent_environment.environment.id
   }
   display_name = "${var.prefix}-cluster"
-  cloud        = "GCPs"
+  cloud        = "${var.cloud}"
   region       = "${var.region}"
   availability = "SINGLE_ZONE"
   basic {

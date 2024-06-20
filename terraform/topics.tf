@@ -45,7 +45,7 @@ resource "confluent_kafka_topic" "product-updates" {
   kafka_cluster {
     id = confluent_kafka_cluster.cluster.id
   }
-  topic_name    = "product_updates"
+  topic_name    = "product-updates"
   partitions_count   = 1
   rest_endpoint = confluent_kafka_cluster.cluster.rest_endpoint
   credentials {

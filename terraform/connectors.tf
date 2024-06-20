@@ -16,9 +16,9 @@ resource "confluent_connector" "datagen_products" {
     "name"                     = "${var.prefix}-datagen_products"
     "kafka.auth.mode"          = "SERVICE_ACCOUNT"
     "kafka.service.account.id" = confluent_service_account.app-general.id
-    "kafka.topic"              = "product_updates"
+    "kafka.topic"              = "product-updates"
     "output.data.format"       = "JSON_SR"
-    "schema.string"            = file("files/hello.txt")
+    "schema.string"            = file("${path.module}/productSchema.json")
     "tasks.max"                = "1"
     "max.interval"             = "10000"
   }
@@ -58,7 +58,7 @@ resource "confluent_connector" "mongo-db-sink" {
     "connection.host"          = replace(mongodbatlas_cluster.atlas-cluster.connection_strings.0.standard_srv, "mongodb+srv://", "") 
     "connection.user"          = mongodbatlas_database_user.db-user.username 
     "input.data.format"        = "JSON_SR"
-    "topics"                   = "product_vector"
+    "topics"                   = "product-vector"
     "max.num.retries"          = "3"
     "retries.defer.timeout"    = "5000"
     "max.batch.size"           = "0"
@@ -73,6 +73,6 @@ resource "confluent_connector" "mongo-db-sink" {
     confluent_kafka_acl.app-general-read-on-topic,
     confluent_kafka_acl.app-general-read-on-group,
     confluent_kafka_acl.app-general-read-on-connect-lcc-group,
-    confluent_flink_statement.insert_shoe_order_customer_product
+    confluent_flink_statement.product-vector
   ]
 }

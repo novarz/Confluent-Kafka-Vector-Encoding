@@ -1,3 +1,4 @@
+
 # --------------------------------------------------------
 # Flink SQL: CREATE Model vector_encoding
 # --------------------------------------------------------
@@ -26,10 +27,12 @@ resource "confluent_flink_statement" "create_model" {
     id = confluent_service_account.app-general.id
   }
    properties = {
-    "sql.current-catalog"  : confluent_environment.environment.display_name
-    "sql.current-database" : confluent_kafka_cluster.cluster.display_name
+    "sql.current-catalog"   : confluent_environment.environment.display_name
+    "sql.current-database"  : confluent_kafka_cluster.cluster.display_name
+    "sql.secrets.openaikey" : var.openai_key
   }
-  statement  = "EXECUTE STATEMENT SET BEGIN \n set 'sql.secrets.openaikey' = '${var.openai_key}'; \n CREATE MODEL `vector_encoding` INPUT (input STRING) OUTPUT (vector ARRAY<FLOAT>) WITH( 'TASK' = 'classification','PROVIDER' = 'OPENAI','OPENAI.ENDPOINT' = 'https://api.openai.com/v1/embeddings','OPENAI.API_KEY' = '{{sessionconfig/sql.secrets.openaikey}}');; END;"
+
+  statement  = "CREATE MODEL `vector_encoding` INPUT (input STRING) OUTPUT (vector ARRAY<FLOAT>) WITH( 'TASK' = 'classification','PROVIDER' = 'OPENAI','OPENAI.ENDPOINT' = 'https://api.openai.com/v1/embeddings','OPENAI.API_KEY' = '{{sessionconfig/sql.secrets.openaikey}}');"
  
   rest_endpoint   =  data.confluent_flink_region.my_flink_region.rest_endpoint
   credentials {
