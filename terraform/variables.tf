@@ -91,6 +91,13 @@ variable "openai_key" {
   description = "MongoDB Version"
 }
 
+# OpenAi Key
+variable "embedding_calls_limit" {
+  type        = string
+  description = "MongoDB Version"
+}
+
+
 
 
 

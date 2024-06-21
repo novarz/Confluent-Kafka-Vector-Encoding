@@ -164,3 +164,43 @@ resource "confluent_flink_statement" "product-vector" {
   }
 }
 
+
+
+# --------------------------------------------------------
+# Flink SQL: INSERT INTO product-vector
+# --------------------------------------------------------
+resource "confluent_flink_statement" "insert-product-vector" {
+  depends_on = [
+    resource.confluent_flink_statement.create_model,
+    resource.confluent_flink_statement.product-vector
+  ]    
+
+  organization {
+    id = data.confluent_organization.main.id
+  }
+
+   environment {
+    id = confluent_environment.environment.id
+  }
+  compute_pool {
+    id = confluent_flink_compute_pool.my_compute_pool.id
+  }
+  principal {
+    id = confluent_service_account.app-general.id
+  }
+  statement  = "insert into `product-vector` select * from `product-content`, lateral table (ml_predict('vector_encoding', content)) limit ${var.embedding_calls_limit};"
+  properties = {
+    "sql.current-catalog"  : confluent_environment.environment.display_name
+    "sql.current-database" : confluent_kafka_cluster.cluster.display_name
+  }
+  rest_endpoint   =  data.confluent_flink_region.my_flink_region.rest_endpoint
+  credentials {
+    key    = confluent_api_key.my_flink_api_key.id
+    secret = confluent_api_key.my_flink_api_key.secret
+  }
+
+  lifecycle {
+    prevent_destroy = false
+  }
+}
+

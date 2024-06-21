@@ -57,7 +57,7 @@ resource "confluent_connector" "mongo-db-sink" {
     "kafka.service.account.id" = confluent_service_account.app-general.id
     "connection.host"          = replace(mongodbatlas_cluster.atlas-cluster.connection_strings.0.standard_srv, "mongodb+srv://", "") 
     "connection.user"          = mongodbatlas_database_user.db-user.username 
-    "input.data.format"        = "JSON_SR"
+    "input.data.format"        = "AVRO"
     "topics"                   = "product-vector"
     "max.num.retries"          = "3"
     "retries.defer.timeout"    = "5000"
