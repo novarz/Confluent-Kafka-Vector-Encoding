@@ -32,7 +32,7 @@ resource "confluent_flink_statement" "create_model" {
     "sql.secrets.openaikey" : var.openai_key
   }
 
-  statement  = "CREATE MODEL `vector_encoding` INPUT (input STRING) OUTPUT (vector ARRAY<FLOAT>) WITH( 'TASK' = 'classification','PROVIDER' = 'OPENAI','OPENAI.ENDPOINT' = 'https://api.openai.com/v1/embeddings','OPENAI.API_KEY' = '{{sessionconfig/sql.secrets.openaikey}}');"
+  statement  = "CREATE MODEL `vector_encoding` INPUT (input STRING) OUTPUT (vector ARRAY<FLOAT>) WITH( 'TASK' = 'Embedding','PROVIDER' = 'OPENAI','OPENAI.MODEL_VERSION' = 'text-embedding-3-small','OPENAI.ENDPOINT' = 'https://api.openai.com/v1/embeddings','OPENAI.API_KEY' = '{{sessionconfig/sql.secrets.openaikey}}');"
  
   rest_endpoint   =  data.confluent_flink_region.my_flink_region.rest_endpoint
   credentials {

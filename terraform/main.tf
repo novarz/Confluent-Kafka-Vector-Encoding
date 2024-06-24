@@ -311,6 +311,28 @@ resource "mongodbatlas_cluster" "atlas-cluster" {
  
 }
 
+resource "mongodbatlas_search_index" "test-basic-search-vector" {
+
+ depends_on = [
+    resource.confluent_connector.mongo-db-sink
+  ]
+
+  name   = "ho"  
+  project_id = mongodbatlas_project.atlas-project.id
+  cluster_name = "${var.mongodbatlas_project_name}-${var.mongodbatlas_environment}-cluster"
+  type = "vectorSearch"
+  database = "${var.mongodbatlas_project_name}-${var.mongodbatlas_environment}-cluster"
+  collection_name = "product_vector"
+  fields = <<-EOF
+    [{
+        "type": "vector",
+        "path": "vector",
+        "numDimensions": 1536,
+        "similarity": "euclidean"
+    }]
+    EOF
+}
+
 # Outputs to Display
 output "atlas_cluster_connection_string" { value = replace(mongodbatlas_cluster.atlas-cluster.connection_strings.0.standard_srv, "mongodb+srv://", "")  }
 output "project_name"      { value = mongodbatlas_project.atlas-project.name }
