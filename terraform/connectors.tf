@@ -58,12 +58,12 @@ resource "confluent_connector" "mongo-db-sink" {
     "connection.host"          = replace(mongodbatlas_cluster.atlas-cluster.connection_strings.0.standard_srv, "mongodb+srv://", "") 
     "connection.user"          = mongodbatlas_database_user.db-user.username 
     "input.data.format"        = "AVRO"
-    "topics"                   = "product-vector"
+    "topics"                   = var.mongodbatlas_collection
     "max.num.retries"          = "3"
     "retries.defer.timeout"    = "5000"
     "max.batch.size"           = "0"
-    "database"                 = "${var.mongodbatlas_project_name}-${var.mongodbatlas_environment}-cluster"
-    "collection"               = "product_vector"
+    "database"                 = "${var.mongodbatlas_project_name}-${var.mongodbatlas_environment}"
+    "collection"               = var.mongodbatlas_collection
     "tasks.max"                = "1"
   }
 

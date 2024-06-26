@@ -282,8 +282,9 @@ resource "mongodbatlas_project_ip_access_list" "ip" {
 
 # Create a Database User
 resource "mongodbatlas_database_user" "db-user" {
-  username = "user-1"
-  password = random_password.db-user-password.result
+  username = var.mongodbatlas_user
+ // password = random_password.db-user-password.result
+  password = var.mongodbatlas_password
   project_id = mongodbatlas_project.atlas-project.id
   auth_database_name = "admin"
   roles {
@@ -302,7 +303,7 @@ resource "random_password" "db-user-password" {
 # Create an Atlas Advanced Cluster 
 resource "mongodbatlas_cluster" "atlas-cluster" {
   project_id = mongodbatlas_project.atlas-project.id
-  name = "${var.mongodbatlas_project_name}-${var.mongodbatlas_environment}-cluster"
+  name = "${var.mongodbatlas_project_name}-${var.mongodbatlas_environment}"
   provider_name = "TENANT"
   backing_provider_name = var.mongodbatlas_cloud_provider
   provider_region_name =  var.mongodbatlas_region
@@ -317,12 +318,12 @@ resource "mongodbatlas_search_index" "test-basic-search-vector" {
     resource.confluent_connector.mongo-db-sink
   ]
 
-  name   = "ho"  
+  name   = "vector-search"  
   project_id = mongodbatlas_project.atlas-project.id
-  cluster_name = "${var.mongodbatlas_project_name}-${var.mongodbatlas_environment}-cluster"
+  cluster_name = "${var.mongodbatlas_project_name}-${var.mongodbatlas_environment}"
   type = "vectorSearch"
-  database = "${var.mongodbatlas_project_name}-${var.mongodbatlas_environment}-cluster"
-  collection_name = "product_vector"
+  database = "${var.mongodbatlas_project_name}-${var.mongodbatlas_environment}"
+  collection_name = var.mongodbatlas_collection
   fields = <<-EOF
     [{
         "type": "vector",
@@ -333,11 +334,16 @@ resource "mongodbatlas_search_index" "test-basic-search-vector" {
     EOF
 }
 
+resource "local_file" "private_key" {
+    content  = mongodbatlas_cluster.atlas-cluster.connection_strings.0.standard_srv
+    filename = "mongodb.properties"
+}
+
+
 # Outputs to Display
+output "atlas_cluster_connection_string-raw" { value = mongodbatlas_cluster.atlas-cluster.connection_strings.0.standard_srv }
 output "atlas_cluster_connection_string" { value = replace(mongodbatlas_cluster.atlas-cluster.connection_strings.0.standard_srv, "mongodb+srv://", "")  }
 output "project_name"      { value = mongodbatlas_project.atlas-project.name }
 output "username"          { value = mongodbatlas_database_user.db-user.username } 
-output "user_password"     { 
-  sensitive = true
-  value = mongodbatlas_database_user.db-user.password 
-  }
+
+

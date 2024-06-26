@@ -91,11 +91,34 @@ variable "openai_key" {
   description = "MongoDB Version"
 }
 
-# OpenAi Key
+# limits insert Flink statement
 variable "embedding_calls_limit" {
   type        = string
   description = "MongoDB Version"
 }
+
+# mongodb_db_user
+
+variable "mongodbatlas_user" {
+  type        = string
+  description = "MongoDB Version"
+}
+
+# mongodb_db_password
+
+variable "mongodbatlas_password" {
+  type        = string
+  description = "MongoDB Version"
+}
+
+variable "mongodbatlas_collection" {
+  type        = string
+  description = "product-vector"
+}
+
+
+
+
 
 
 

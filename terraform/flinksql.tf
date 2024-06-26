@@ -203,4 +203,4 @@ resource "confluent_flink_statement" "insert-product-vector" {
     prevent_destroy = false
   }
 }
-
+ 
